@@ -12,15 +12,12 @@
 <body>
     <div class="chat-container">
         <header class="chat-header">
-            <div class="header-info">
-                <h1>Election Assistant</h1>
-                <p>Your guide to the election process</p>
-            </div>
+            <h1>Election Assistant</h1>
         </header>
         
         <main class="chat-area" id="chat-area">
-            <!-- Messages will appear here -->
             <div class="message assistant-message">
+                <div class="avatar assistant-avatar">EA</div>
                 <div class="message-content">
                     Hello! I'm your Election Assistant. How can I help you understand the election process today? You can ask me about registration, timelines, or polling locations.
                 </div>
@@ -29,13 +26,15 @@
 
         <footer class="input-area">
             <form id="chat-form">
-                <input type="text" id="user-input" placeholder="Type your question here..." autocomplete="off" required>
-                <button type="submit" id="send-btn" aria-label="Send message">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                </button>
+                <div class="input-wrapper">
+                    <input type="text" id="user-input" placeholder="Message Election Assistant..." autocomplete="off" autofocus>
+                    <button type="submit" id="send-btn" aria-label="Send message" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="footer-text">Election Assistant can make mistakes. Check important info.</div>
             </form>
         </footer>
     </div>
