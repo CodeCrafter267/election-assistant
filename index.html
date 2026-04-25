@@ -3,38 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Election Assistant</title>
+    <title>Election Navigator | Your Guide to Voting</title>
+    <meta name="description" content="A professional AI-powered assistant to help you navigate registration, election timelines, and voting procedures in India.">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="chat-container">
         <header class="chat-header">
-            <h1>Election Assistant</h1>
+            <div class="header-content">
+                <div class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+                        <path d="M2 17L12 22L22 17"/>
+                        <path d="M2 12L12 17L22 12"/>
+                    </svg>
+                </div>
+                <h1>Election Navigator</h1>
+            </div>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text">AI Ready</span>
+            </div>
         </header>
         
         <main class="chat-area" id="chat-area">
             <div class="message assistant-message">
                 <div class="avatar assistant-avatar">EA</div>
                 <div class="message-content">
-                    Hello! I'm your Election Assistant. How can I help you understand the election process today? You can ask me about registration, timelines, or polling locations.
+                    <strong>Welcome to Election Navigator.</strong><br>
+                    I'm here to help you navigate the democratic process. What would you like to know today?<br><br>
+                    Next: Would you like to check your registration status or learn how to apply?
                 </div>
             </div>
         </main>
 
         <footer class="input-area">
+            <div id="quick-actions" class="quick-actions-container">
+                <!-- Chips will be dynamically injected here -->
+            </div>
             <form id="chat-form">
                 <div class="input-wrapper">
-                    <input type="text" id="user-input" placeholder="Message Election Assistant..." autocomplete="off" autofocus>
+                    <input type="text" id="user-input" placeholder="Ask about registration, documents, or timelines..." autocomplete="off" autofocus>
                     <button type="submit" id="send-btn" aria-label="Send message" disabled>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                             <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
                     </button>
                 </div>
-                <div class="footer-text">Election Assistant can make mistakes. Check important info.</div>
+                <div class="footer-text">Election Assistant can make mistakes. Verify critical info at <a href="https://voters.eci.gov.in/" target="_blank">voters.eci.gov.in</a></div>
             </form>
         </footer>
     </div>

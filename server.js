@@ -11,75 +11,82 @@ app.use(express.static('.'));
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { message } = req.body;
+        const { history, state } = req.body;
 
-        if (!message) {
-            return res.status(400).json({ error: "Message is required" });
+        if (!history || !Array.isArray(history)) {
+            return res.status(400).json({ error: "Invalid history format" });
         }
 
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
-             return res.status(500).json({ error: "API key is not configured on the server." });
+             return res.status(500).json({ error: "API key missing" });
         }
 
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
         
-        const systemPrompt = `You are "The Election Navigator", a neutral, non-partisan AI assistant.
+        const systemPrompt = `You are "Election Navigator", a helpful AI for Indian voters.
+Your goal is to provide COMPLETE, structured, and actionable information.
 
-CRITICAL RULES:
-- Do NOT repeat your introduction. Start answering immediately.
-- Keep responses short and concise (max 5-6 lines total).
-- Use simple language (8th grade level).
-- Never give political opinions or suggest who to vote for.
-- Avoid long paragraphs.
-- Make responses conversational. Example: "Got it — since you're in Delhi, here's how to register:"
-- Always guide the user to the next action with a short question at the end.
+STRICT REQUIREMENTS:
+- Never return partial or cut-off responses.
+- If providing instructions, always include ALL necessary steps (minimum 3-4 steps).
+- Responses must be complete even if they are concise.
+- Use the format below for all responses.
 
-RESPONSE STRUCTURE:
-Always use this format:
-**[Title or Conversational Opening]**
-[Key link, if applicable]
+RESPONSE FORMAT:
+🗳️ [Title]
+
 1. [Step 1]
 2. [Step 2]
-3. [Step 3 or 4]
+3. [Step 3]
+4. [Step 4]
 
-[Short next-step question]
+📌 Tip: [1-sentence helpful tip]
+Next: [Action 1] or [Action 2]
 
-BEHAVIOR:
-- First understand user's location, determine eligibility, then guide through the process.
-- If user asks about registration, provide official website if known.
-- If user gives a location (e.g., Delhi), provide relevant official info (e.g., https://voterportal.eci.gov.in/).
-- If unclear, ask a follow-up question instead of a generic answer.
+RULES:
+- No long paragraphs.
+- Use **bold** for emphasis.
+- Use [Link Text](URL) for links.
+- User Age: ${state?.age || 'unknown'}.`;
 
-User message: "${message}"`;
+        const geminiContents = history.map((msg) => ({
+            role: msg.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: msg.text }]
+        }));
 
         const apiResponse = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{
-                    role: "user",
+                systemInstruction: {
                     parts: [{ text: systemPrompt }]
-                }]
+                },
+                contents: geminiContents,
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 800,
+                }
             })
         });
 
         if (!apiResponse.ok) {
-            console.error("API Response not ok:", apiResponse.status, apiResponse.statusText);
-            return res.status(apiResponse.status).json({ error: "Failed to communicate with AI provider." });
+            const errorData = await apiResponse.json();
+            console.error(`[AI Error]`, errorData);
+            return res.status(apiResponse.status).json({ error: "AI Busy" });
         }
 
         const data = await apiResponse.json();
         
-        if (data.candidates && data.candidates.length > 0) {
+        if (data.candidates && data.candidates[0].content) {
             let aiText = data.candidates[0].content.parts[0].text;
             res.json({ response: aiText.trim() });
         } else {
-            res.json({ response: "I'm not sure how to answer that. Need help with <em>registration</em> or <em>how to vote</em>?" });
+            res.json({ response: "I'm having trouble thinking clearly. Next: Registration steps or Documents needed?" });
         }
     } catch (error) {
-        console.error("Server API Error:", error);
-        res.status(500).json({ error: "I'm having a bit of trouble thinking right now. You can try asking me to <em>Teach you the basics</em>." });
+        console.error("Server Error:", error);
+        res.status(500).json({ error: "Internal error" });
     }
 });
 
